@@ -2,9 +2,11 @@ package com.tierguardians.finances.service;
 
 import com.tierguardians.finances.domain.Asset;
 import com.tierguardians.finances.dto.AssetRequestDto;
+import com.tierguardians.finances.dto.AssetUpdateRequestDto;
 import com.tierguardians.finances.repository.AssetRepository;
 import com.tierguardians.finances.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +34,18 @@ public class AssetService {
 
         Asset asset = new Asset();
         asset.setUserId(dto.getUserId());
+        asset.setName(dto.getName());
+        asset.setType(dto.getType());
+        asset.setAmount(dto.getAmount());
+
+        assetRepository.save(asset);
+    }
+
+    // 자산 수정
+    @Transactional
+    public void updateAsset(Long id, AssetUpdateRequestDto dto) {
+        Asset asset = assetRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("자산이 존재하지 않습니다."));
         asset.setName(dto.getName());
         asset.setType(dto.getType());
         asset.setAmount(dto.getAmount());

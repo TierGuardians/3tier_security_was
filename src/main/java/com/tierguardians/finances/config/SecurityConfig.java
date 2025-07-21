@@ -13,7 +13,7 @@ public class SecurityConfig {
         http
                 .csrf().disable() // 테스트 시에는 CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/signup", "/users/login", "/users/mypage/**", "/assets").permitAll()
+                        .requestMatchers("/users/signup", "/users/login", "/users/mypage/**", "/assets/**").permitAll()
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 )
                 .httpBasic(); // 또는 .formLogin() 도 가능
