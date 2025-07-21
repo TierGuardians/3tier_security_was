@@ -2,6 +2,7 @@ package com.tierguardians.finances.service;
 
 import com.tierguardians.finances.domain.Budget;
 import com.tierguardians.finances.dto.BudgetRequestDto;
+import com.tierguardians.finances.dto.BudgetUpdateRequestDto;
 import com.tierguardians.finances.repository.BudgetRepository;
 import com.tierguardians.finances.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -45,4 +46,16 @@ public class BudgetService {
 
         budgetRepository.save(budget);
     }
+
+    // 예산 수정
+    public void updateBudget(Long id, BudgetUpdateRequestDto dto) {
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("예산 항목이 존재하지 않습니다."));
+
+        budget.setMonth(dto.getMonth());
+        budget.setAmount(BigDecimal.valueOf(dto.getAmount()));
+
+        budgetRepository.save(budget);
+    }
+
 }

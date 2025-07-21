@@ -2,6 +2,7 @@ package com.tierguardians.finances.controller;
 
 import com.tierguardians.finances.domain.Budget;
 import com.tierguardians.finances.dto.BudgetRequestDto;
+import com.tierguardians.finances.dto.BudgetUpdateRequestDto;
 import com.tierguardians.finances.service.BudgetService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,4 +43,13 @@ public class BudgetController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "예산 등록 완료"));
     }
+
+    // 예산 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, String>> updateBudget(@PathVariable Long id,
+                                                            @RequestBody BudgetUpdateRequestDto dto) {
+        budgetService.updateBudget(id, dto);
+        return ResponseEntity.ok(Map.of("message", "예산 수정 완료"));
+    }
+
 }
