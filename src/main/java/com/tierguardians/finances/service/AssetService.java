@@ -53,4 +53,12 @@ public class AssetService {
         assetRepository.save(asset);
     }
 
+    // 자산 삭제
+    public void deleteAsset(Long id) {
+        if (!assetRepository.existsById(id)) {
+            throw new IllegalArgumentException("해당 자산이 존재하지 않습니다.");
+        }
+        assetRepository.deleteById(id);
+    }
+
 }

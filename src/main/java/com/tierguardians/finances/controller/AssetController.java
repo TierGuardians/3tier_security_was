@@ -45,4 +45,11 @@ public class AssetController {
         return ResponseEntity.ok(Map.of("message", "자산 수정 완료"));
     }
 
+    // 자산 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteAsset(@PathVariable Long id) {
+        assetService.deleteAsset(id);
+        return ResponseEntity.ok(Map.of("message", "자산 삭제 완료"));
+    }
+
 }
