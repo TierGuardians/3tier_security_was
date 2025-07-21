@@ -1,18 +1,24 @@
 package com.tierguardians.finances.service;
 
 import com.tierguardians.finances.domain.Budget;
+import com.tierguardians.finances.dto.BudgetRequestDto;
 import com.tierguardians.finances.repository.BudgetRepository;
+import com.tierguardians.finances.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class BudgetService {
 
     private final BudgetRepository budgetRepository;
+    private final UserRepository userRepository;
 
-    public BudgetService(BudgetRepository budgetRepository) {
+    public BudgetService(BudgetRepository budgetRepository, UserRepository userRepository) {
         this.budgetRepository = budgetRepository;
+        this.userRepository = userRepository;
     }
 
     // 예산 조회
@@ -24,4 +30,19 @@ public class BudgetService {
         return budgetRepository.findAllByUserId(userId);
     }
 
+    // 예산 등록
+    public void addBudget(BudgetRequestDto dto) {
+        if (!userRepository.existsById(dto.getUserId())) {
+            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+        }
+
+        Budget budget = new Budget();
+        budget.setUserId(dto.getUserId());
+        budget.setMonth(dto.getMonth());
+        //budget.setCategory(dto.getCategory());
+        budget.setAmount(BigDecimal.valueOf(dto.getAmount()));
+        budget.setCreatedAt(LocalDateTime.now());
+
+        budgetRepository.save(budget);
+    }
 }

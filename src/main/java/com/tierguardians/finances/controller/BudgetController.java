@@ -1,14 +1,14 @@
 package com.tierguardians.finances.controller;
 
 import com.tierguardians.finances.domain.Budget;
+import com.tierguardians.finances.dto.BudgetRequestDto;
 import com.tierguardians.finances.service.BudgetService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/budgets")
@@ -35,4 +35,11 @@ public class BudgetController {
         }
     }
 
+    // 예산 등록
+    @PostMapping
+    public ResponseEntity<Map<String, String>> addBudget(@RequestBody BudgetRequestDto dto) {
+        budgetService.addBudget(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "예산 등록 완료"));
+    }
 }
