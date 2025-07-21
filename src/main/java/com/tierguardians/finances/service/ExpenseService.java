@@ -1,0 +1,29 @@
+package com.tierguardians.finances.service;
+
+import com.tierguardians.finances.domain.Expense;
+import com.tierguardians.finances.repository.ExpenseRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ExpenseService {
+
+    private final ExpenseRepository expenseRepository;
+
+    public ExpenseService(ExpenseRepository expenseRepository) {
+        this.expenseRepository = expenseRepository;
+    }
+
+    public List<Expense> getExpenses(String userId, String month, String category) {
+        if (month != null && category != null) {
+            return expenseRepository.findByUserIdAndMonthAndCategory(userId, month, category);
+        } else if (month != null) {
+            return expenseRepository.findByUserIdAndMonth(userId, month);
+        } else if (category != null) {
+            return expenseRepository.findByUserIdAndCategory(userId, category);
+        } else {
+            return expenseRepository.findByUserId(userId);
+        }
+    }
+}
