@@ -1,3 +1,5 @@
+package com.tierguardians.finances.controller;
+
 import com.tierguardians.finances.dto.UserSignupRequestDto;
 import com.tierguardians.finances.service.UserService;
 import org.springframework.http.HttpStatus;
