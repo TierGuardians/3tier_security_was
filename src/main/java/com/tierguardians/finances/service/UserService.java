@@ -1,18 +1,24 @@
 package com.tierguardians.finances.service;
 
 import com.tierguardians.finances.domain.User;
-import com.tierguardians.finances.dto.UserSignupRequestDto;
+import com.tierguardians.finances.dto.*;
+import com.tierguardians.finances.repository.AssetRepository;
+import com.tierguardians.finances.repository.BudgetRepository;
+import com.tierguardians.finances.repository.ExpenseRepository;
 import com.tierguardians.finances.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
-    public UserService(UserRepository repo) {
-        this.userRepository = repo;
-    }
+    private final BudgetRepository budgetRepository;
+    private final AssetRepository assetRepository;
+    private final ExpenseRepository expenseRepository;
 
     // 회원가입 기능
     public void signup(UserSignupRequestDto dto) {
@@ -32,5 +38,54 @@ public class UserService {
                 .map(user -> user.getPassword().equals(password))
                 .orElse(false);
     }
+
+    // 내 정보 조회 기능
+    public MyPageResponseDto getMyPage(String userId) {
+        // 사용자 정보
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
+        UserInfoDto userInfo = UserInfoDto.builder()
+                .userId(user.getUserId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .createdAt(user.getCreatedAt())
+                .build();
+
+        // 예산
+        List<BudgetDto> budgets = budgetRepository.findByUserId(userId).stream()
+                .map(b -> BudgetDto.builder()
+                        .month(b.getMonth())
+                        .amount(b.getAmount())
+                        .build())
+                .toList();
+
+        // 자산
+        List<AssetDto> assets = assetRepository.findByUserId(userId).stream()
+                .map(a -> AssetDto.builder()
+                        .name(a.getName())
+                        .type(a.getType())
+                        .amount(a.getAmount())
+                        .build())
+                .toList();
+
+        // 소비
+        List<ExpenseDto> expenses = expenseRepository.findByUserId(userId).stream()
+                .map(e -> ExpenseDto.builder()
+                        .category(e.getCategory())
+                        .description(e.getDescription())
+                        .amount(e.getAmount())
+                        .spentAt(LocalDate.parse(e.getSpentAt().toString()))
+                        .build())
+                .toList();
+
+        return MyPageResponseDto.builder()
+                .user(userInfo)
+                .budgets(budgets)
+                .assets(assets)
+                .expenses(expenses)
+                .build();
+    }
+
 
 }
