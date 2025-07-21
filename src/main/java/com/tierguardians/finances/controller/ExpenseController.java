@@ -47,4 +47,11 @@ public class ExpenseController {
         expenseService.updateExpense(id, dto);
         return ResponseEntity.ok(Map.of("message", "소비 내역 수정 완료"));
     }
+
+    // 소비 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteExpense(@PathVariable Long id) {
+        expenseService.deleteExpense(id);
+        return ResponseEntity.ok(Map.of("message", "소비 내역 삭제 완료"));
+    }
 }

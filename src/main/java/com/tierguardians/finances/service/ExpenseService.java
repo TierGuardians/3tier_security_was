@@ -54,8 +54,14 @@ public class ExpenseService {
         expense.setDescription(dto.getDescription());
         expense.setAmount(BigDecimal.valueOf(dto.getAmount()));
         expense.setSpentAt(dto.getSpentAt());
+    }
 
-        // JPA의 dirty checking에 의해 자동으로 update 됨
+    // 소비 삭제
+    public void deleteExpense(Long id) {
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 소비 내역이 존재하지 않습니다."));
+
+        expenseRepository.delete(expense);
     }
 
 }
