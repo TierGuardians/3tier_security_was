@@ -58,4 +58,11 @@ public class BudgetService {
         budgetRepository.save(budget);
     }
 
+    // 예산 삭제
+    public void deleteBudget(Long id) {
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("예산 항목이 존재하지 않습니다."));
+
+        budgetRepository.delete(budget);
+    }
 }

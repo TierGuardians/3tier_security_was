@@ -52,4 +52,11 @@ public class BudgetController {
         return ResponseEntity.ok(Map.of("message", "예산 수정 완료"));
     }
 
+    // 예산 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteBudget(@PathVariable Long id) {
+        budgetService.deleteBudget(id);
+        return ResponseEntity.ok(Map.of("message", "예산 삭제 완료"));
+    }
+
 }
