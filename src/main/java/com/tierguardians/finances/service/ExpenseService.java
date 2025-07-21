@@ -2,8 +2,10 @@ package com.tierguardians.finances.service;
 
 import com.tierguardians.finances.domain.Expense;
 import com.tierguardians.finances.dto.ExpenseRequestDto;
+import com.tierguardians.finances.dto.ExpenseUpdateRequestDto;
 import com.tierguardians.finances.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,4 +43,19 @@ public class ExpenseService {
 
         expenseRepository.save(expense);
     }
+
+    // 소비 수정
+    @Transactional
+    public void updateExpense(Long id, ExpenseUpdateRequestDto dto) {
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 소비 내역이 존재하지 않습니다."));
+
+        expense.setCategory(dto.getCategory());
+        expense.setDescription(dto.getDescription());
+        expense.setAmount(BigDecimal.valueOf(dto.getAmount()));
+        expense.setSpentAt(dto.getSpentAt());
+
+        // JPA의 dirty checking에 의해 자동으로 update 됨
+    }
+
 }

@@ -28,6 +28,6 @@ public class Expense {
     @Column(name = "spent_at", nullable = false)
     private LocalDate spentAt;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }

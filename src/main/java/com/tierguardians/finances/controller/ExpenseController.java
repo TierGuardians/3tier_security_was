@@ -2,6 +2,7 @@ package com.tierguardians.finances.controller;
 
 import com.tierguardians.finances.domain.Expense;
 import com.tierguardians.finances.dto.ExpenseRequestDto;
+import com.tierguardians.finances.dto.ExpenseUpdateRequestDto;
 import com.tierguardians.finances.service.ExpenseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,14 @@ public class ExpenseController {
     public ResponseEntity<Map<String, String>> addExpense(@RequestBody ExpenseRequestDto dto) {
         expenseService.addExpense(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "소비 내역 등록 완료"));
+    }
+
+    // 소비 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, String>> updateExpense(
+            @PathVariable Long id,
+            @RequestBody ExpenseUpdateRequestDto dto) {
+        expenseService.updateExpense(id, dto);
+        return ResponseEntity.ok(Map.of("message", "소비 내역 수정 완료"));
     }
 }
