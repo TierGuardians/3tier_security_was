@@ -18,14 +18,14 @@ public class UserService {
     public void signup(UserSignupRequestDto dto) {
         User user = new User();
         user.setUserId(dto.getUserId());
-        // 평문 저장
-        user.setPassword(dto.getPassword());
+        user.setPassword(dto.getPassword()); // 평문 저장 (추후 BCrypt 변경 가능)
         // 비밀번호 암호화 부분
         //user.setPassword(new BCryptPasswordEncoder().encode(dto.getPassword()));
         user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+
         userRepository.save(user);
     }
-
     // 로그인 기능
     public boolean login(String userId, String password) {
         return userRepository.findById(userId)
