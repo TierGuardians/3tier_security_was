@@ -1,5 +1,6 @@
 package com.tierguardians.finances.controller;
 
+import com.tierguardians.finances.dto.ApiResponse;
 import com.tierguardians.finances.dto.MyPageResponseDto;
 import com.tierguardians.finances.dto.UserLoginRequestDto;
 import com.tierguardians.finances.dto.UserSignupRequestDto;
@@ -22,19 +23,25 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody UserSignupRequestDto dto) {
+    public ResponseEntity<ApiResponse<Void>> signup(@RequestBody UserSignupRequestDto dto) {
         userService.signup(dto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("message", "회원가입 완료"));
+        ApiResponse<Void> response = new ApiResponse<>(true, 201, "회원가입 성공", null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 
     // 로그인
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody UserLoginRequestDto request) {
-        boolean result = userService.login(request.getUserId(), request.getPassword());
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", result);
-        return response;
+    public ResponseEntity<ApiResponse<Void>> login(@RequestBody UserLoginRequestDto dto) {
+        boolean result = userService.login(dto.getUserId(), dto.getPassword());
+
+        if (result) {
+            ApiResponse<Void> response = new ApiResponse<>(true, 200, "로그인 성공", null);
+            return ResponseEntity.ok(response);
+        } else {
+            ApiResponse<Void> response = new ApiResponse<>(false, 401, "로그인 실패: 아이디 또는 비밀번호 오류", null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
     }
 
     // 내 정보 조회

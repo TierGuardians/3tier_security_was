@@ -22,9 +22,19 @@ public class UserService {
 
     // 회원가입 기능
     public void signup(UserSignupRequestDto dto) {
+        // 사용자 ID 중복 확인
+        if (userRepository.existsById(dto.getUserId())) {
+            throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
+        }
+        // 이메일 중복 확인
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
+
+        // 사용자 엔티티 생성 및 저장
         User user = new User();
         user.setUserId(dto.getUserId());
-        user.setPassword(dto.getPassword()); // 평문 저장 (추후 BCrypt 변경 가능)
+        user.setPassword(dto.getPassword());  // 현재는 평문 비밀번호
         // 비밀번호 암호화 부분
         //user.setPassword(new BCryptPasswordEncoder().encode(dto.getPassword()));
         user.setName(dto.getName());
