@@ -40,7 +40,6 @@ public class BudgetService {
         Budget budget = new Budget();
         budget.setUserId(dto.getUserId());
         budget.setMonth(dto.getMonth());
-        //budget.setCategory(dto.getCategory());
         budget.setAmount(BigDecimal.valueOf(dto.getAmount()));
         budget.setCreatedAt(LocalDateTime.now());
 

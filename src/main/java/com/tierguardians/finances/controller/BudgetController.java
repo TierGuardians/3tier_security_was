@@ -1,6 +1,7 @@
 package com.tierguardians.finances.controller;
 
 import com.tierguardians.finances.domain.Budget;
+import com.tierguardians.finances.dto.ApiResponse;
 import com.tierguardians.finances.dto.BudgetRequestDto;
 import com.tierguardians.finances.dto.BudgetUpdateRequestDto;
 import com.tierguardians.finances.service.BudgetService;
@@ -23,40 +24,40 @@ public class BudgetController {
 
     // 예산 조회
     @GetMapping
-    public ResponseEntity<?> getBudgets(
+    public ResponseEntity<ApiResponse<?>> getBudgets(
             @RequestParam String userId,
             @RequestParam(required = false) String month
     ) {
         if (month != null) {
             Budget budget = budgetService.getBudget(userId, month);
-            return ResponseEntity.ok(budget);
+            return ResponseEntity.ok(ApiResponse.success(budget));
         } else {
             List<Budget> budgets = budgetService.getAllBudgets(userId);
-            return ResponseEntity.ok(budgets);
+            return ResponseEntity.ok(ApiResponse.success(budgets));
         }
     }
 
     // 예산 등록
     @PostMapping
-    public ResponseEntity<Map<String, String>> addBudget(@RequestBody BudgetRequestDto dto) {
+    public ResponseEntity<ApiResponse<String>> addBudget(@RequestBody BudgetRequestDto dto) {
         budgetService.addBudget(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("message", "예산 등록 완료"));
+                .body(ApiResponse.success("예산 등록 완료", 201));
     }
 
     // 예산 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, String>> updateBudget(@PathVariable Long id,
+    public ResponseEntity<ApiResponse<String>> updateBudget(@PathVariable Long id,
                                                             @RequestBody BudgetUpdateRequestDto dto) {
         budgetService.updateBudget(id, dto);
-        return ResponseEntity.ok(Map.of("message", "예산 수정 완료"));
+        return ResponseEntity.ok(ApiResponse.success("예산 수정 완료"));
     }
 
     // 예산 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteBudget(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> deleteBudget(@PathVariable Long id) {
         budgetService.deleteBudget(id);
-        return ResponseEntity.ok(Map.of("message", "예산 삭제 완료"));
+        return ResponseEntity.ok(ApiResponse.success("예산 삭제 완료"));
     }
 
 }
