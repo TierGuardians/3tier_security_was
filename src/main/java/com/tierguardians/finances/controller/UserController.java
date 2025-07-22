@@ -8,6 +8,7 @@ import com.tierguardians.finances.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +17,11 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final RestClient.Builder builder;
 
-    public UserController(UserService service) {
+    public UserController(UserService service, RestClient.Builder builder) {
         this.userService = service;
+        this.builder = builder;
     }
 
     // 회원가입
@@ -28,7 +31,6 @@ public class UserController {
         ApiResponse<Void> response = new ApiResponse<>(true, 201, "회원가입 성공", null);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
 
     // 로그인
     @PostMapping("/login")
@@ -46,9 +48,14 @@ public class UserController {
 
     // 내 정보 조회
     @GetMapping("/mypage/{userId}")
-    public ResponseEntity<MyPageResponseDto> getMyPage(@PathVariable String userId) {
+    public ResponseEntity<ApiResponse<MyPageResponseDto>> getMyPage(@PathVariable String userId) {
         MyPageResponseDto response = userService.getMyPage(userId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.<MyPageResponseDto>builder()
+                .success(true)
+                .code(200)
+                .message("내 정보 조회 성공")
+                .data(response)
+                .build());
     }
 
 }

@@ -42,18 +42,24 @@ public class UserService {
 
         userRepository.save(user);
     }
+
     // 로그인 기능
     public boolean login(String userId, String password) {
-        return userRepository.findById(userId)
-                .map(user -> user.getPassword().equals(password))
-                .orElse(false);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        if (!user.getPassword().equals(password)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        return true;
     }
 
     // 내 정보 조회 기능
     public MyPageResponseDto getMyPage(String userId) {
-        // 사용자 정보
+        // 사용자 정보 조회 및 검증
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         UserInfoDto userInfo = UserInfoDto.builder()
                 .userId(user.getUserId())
@@ -65,6 +71,7 @@ public class UserService {
         // 예산
         List<BudgetDto> budgets = budgetRepository.findByUserId(userId).stream()
                 .map(b -> BudgetDto.builder()
+                        .id(b.getId())
                         .month(b.getMonth())
                         .amount(b.getAmount())
                         .build())
@@ -73,6 +80,7 @@ public class UserService {
         // 자산
         List<AssetDto> assets = assetRepository.findByUserId(userId).stream()
                 .map(a -> AssetDto.builder()
+                        .id(a.getId())
                         .name(a.getName())
                         .type(a.getType())
                         .amount(a.getAmount())
@@ -82,10 +90,11 @@ public class UserService {
         // 소비
         List<ExpenseDto> expenses = expenseRepository.findByUserId(userId).stream()
                 .map(e -> ExpenseDto.builder()
+                        .id(e.getId())
                         .category(e.getCategory())
                         .description(e.getDescription())
                         .amount(e.getAmount())
-                        .spentAt(LocalDate.parse(e.getSpentAt().toString()))
+                        .spentAt(LocalDate.ofEpochDay(e.getSpentAt().toEpochDay()))
                         .build())
                 .toList();
 
@@ -96,6 +105,7 @@ public class UserService {
                 .expenses(expenses)
                 .build();
     }
+
 
 
 }
