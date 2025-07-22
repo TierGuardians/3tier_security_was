@@ -1,6 +1,7 @@
 package com.tierguardians.finances.controller;
 
 import com.tierguardians.finances.domain.Expense;
+import com.tierguardians.finances.dto.ApiResponse;
 import com.tierguardians.finances.dto.ExpenseRequestDto;
 import com.tierguardians.finances.dto.ExpenseUpdateRequestDto;
 import com.tierguardians.finances.service.ExpenseService;
@@ -23,35 +24,36 @@ public class ExpenseController {
 
     // 소비 내역 조회
     @GetMapping
-    public ResponseEntity<List<Expense>> getExpenses(
+    public ResponseEntity<ApiResponse<List<Expense>>> getExpenses(
             @RequestParam String userId,
             @RequestParam(required = false) String month,
             @RequestParam(required = false) String category
     ) {
         List<Expense> expenses = expenseService.getExpenses(userId, month, category);
-        return ResponseEntity.ok(expenses);
+        return ResponseEntity.ok(ApiResponse.success(expenses));
     }
 
     // 소비 등록
     @PostMapping
-    public ResponseEntity<Map<String, String>> addExpense(@RequestBody ExpenseRequestDto dto) {
+    public ResponseEntity<ApiResponse<String>> addExpense(@RequestBody ExpenseRequestDto dto) {
         expenseService.addExpense(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "소비 내역 등록 완료"));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("소비 내역 등록 완료", 201));
     }
 
     // 소비 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, String>> updateExpense(
+    public ResponseEntity<ApiResponse<String>> updateExpense(
             @PathVariable Long id,
             @RequestBody ExpenseUpdateRequestDto dto) {
         expenseService.updateExpense(id, dto);
-        return ResponseEntity.ok(Map.of("message", "소비 내역 수정 완료"));
+        return ResponseEntity.ok(ApiResponse.success("소비 내역 수정 완료"));
     }
 
     // 소비 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteExpense(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> deleteExpense(@PathVariable Long id) {
         expenseService.deleteExpense(id);
-        return ResponseEntity.ok(Map.of("message", "소비 내역 삭제 완료"));
+        return ResponseEntity.ok(ApiResponse.success("소비 내역 삭제 완료"));
     }
 }
