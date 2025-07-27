@@ -1,13 +1,15 @@
 package com.tierguardians.finances.exception;
 
+import com.tierguardians.finances.controller.*;
 import com.tierguardians.finances.dto.ApiResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+@RestControllerAdvice(annotations = {RestController.class}, basePackageClasses = {AssetController.class, BudgetController.class, ExpenseController.class, TokenController.class, UserController.class})
 public class GlobalExceptionHandler {
 
     // 공통 응답 생성 메서드
