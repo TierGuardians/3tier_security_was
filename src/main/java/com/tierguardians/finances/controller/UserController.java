@@ -9,6 +9,7 @@ import com.tierguardians.finances.service.UserService;
 import com.tierguardians.finances.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,8 +61,9 @@ public class UserController {
 
 
     // 내 정보 조회
-    @GetMapping("/mypage/{userId}")
-    public ResponseEntity<ApiResponse<MyPageResponseDto>> getMyPage(@PathVariable String userId) {
+    @GetMapping("/mypage")
+    public ResponseEntity<ApiResponse<MyPageResponseDto>> getMyPage(Authentication authentication) {
+        String userId = authentication.getName(); // JWT에서 추출된 userId
         MyPageResponseDto response = userService.getMyPage(userId);
         return ResponseEntity.ok(ApiResponse.<MyPageResponseDto>builder()
                 .success(true)
@@ -70,5 +72,6 @@ public class UserController {
                 .data(response)
                 .build());
     }
+
 
 }
