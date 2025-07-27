@@ -33,9 +33,9 @@ public class ExpenseService {
     }
 
     // 소비 등록
-    public void addExpense(ExpenseRequestDto dto) {
+    public void addExpense(ExpenseRequestDto dto, String userId) {
         Expense expense = new Expense();
-        expense.setUserId(dto.getUserId());
+        expense.setUserId(userId);
         expense.setCategory(dto.getCategory());
         expense.setDescription(dto.getDescription());
         expense.setAmount(BigDecimal.valueOf(dto.getAmount()));
@@ -46,9 +46,13 @@ public class ExpenseService {
 
     // 소비 수정
     @Transactional
-    public void updateExpense(Long id, ExpenseUpdateRequestDto dto) {
+    public void updateExpense(Long id, ExpenseUpdateRequestDto dto, String userId) {
         Expense expense = expenseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 소비 내역이 존재하지 않습니다."));
+
+        if (!expense.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("해당 소비 내역 수정 권한이 없습니다.");
+        }
 
         expense.setCategory(dto.getCategory());
         expense.setDescription(dto.getDescription());
@@ -57,11 +61,14 @@ public class ExpenseService {
     }
 
     // 소비 삭제
-    public void deleteExpense(Long id) {
+    public void deleteExpense(Long id, String userId) {
         Expense expense = expenseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 소비 내역이 존재하지 않습니다."));
 
+        if (!expense.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("해당 소비 내역 삭제 권한이 없습니다.");
+        }
+
         expenseRepository.delete(expense);
     }
-
 }

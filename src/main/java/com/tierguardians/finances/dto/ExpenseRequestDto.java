@@ -8,12 +8,9 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class ExpenseRequestDto {
-    private String userId;
     private String category;
     private String description;
     private int amount;
     private LocalDate spentAt;
-
-    // getters & setters
 }
 
