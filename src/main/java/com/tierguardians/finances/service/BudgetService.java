@@ -27,18 +27,19 @@ public class BudgetService {
         return budgetRepository.findByUserIdAndMonth(userId, month)
                 .orElseThrow(() -> new IllegalArgumentException("해당 예산이 존재하지 않습니다."));
     }
+
     public List<Budget> getAllBudgets(String userId) {
         return budgetRepository.findAllByUserId(userId);
     }
 
     // 예산 등록
-    public void addBudget(BudgetRequestDto dto) {
-        if (!userRepository.existsById(dto.getUserId())) {
+    public void addBudget(BudgetRequestDto dto, String userId) {
+        if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
         }
 
         Budget budget = new Budget();
-        budget.setUserId(dto.getUserId());
+        budget.setUserId(userId);
         budget.setMonth(dto.getMonth());
         budget.setAmount(BigDecimal.valueOf(dto.getAmount()));
         budget.setCreatedAt(LocalDateTime.now());
@@ -47,20 +48,27 @@ public class BudgetService {
     }
 
     // 예산 수정
-    public void updateBudget(Long id, BudgetUpdateRequestDto dto) {
+    public void updateBudget(Long id, BudgetUpdateRequestDto dto, String userId) {
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("예산 항목이 존재하지 않습니다."));
 
+        if (!budget.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("수정 권한이 없습니다.");
+        }
+
         budget.setMonth(dto.getMonth());
         budget.setAmount(BigDecimal.valueOf(dto.getAmount()));
-
         budgetRepository.save(budget);
     }
 
     // 예산 삭제
-    public void deleteBudget(Long id) {
+    public void deleteBudget(Long id, String userId) {
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("예산 항목이 존재하지 않습니다."));
+
+        if (!budget.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
 
         budgetRepository.delete(budget);
     }
