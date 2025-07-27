@@ -6,11 +6,15 @@ import com.tierguardians.finances.repository.AssetRepository;
 import com.tierguardians.finances.repository.BudgetRepository;
 import com.tierguardians.finances.repository.ExpenseRepository;
 import com.tierguardians.finances.repository.UserRepository;
+import com.tierguardians.finances.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +23,8 @@ public class UserService {
     private final BudgetRepository budgetRepository;
     private final AssetRepository assetRepository;
     private final ExpenseRepository expenseRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     // 회원가입 기능
     public void signup(UserSignupRequestDto dto) {
@@ -34,9 +40,8 @@ public class UserService {
         // 사용자 엔티티 생성 및 저장
         User user = new User();
         user.setUserId(dto.getUserId());
-        user.setPassword(dto.getPassword());  // 현재는 평문 비밀번호
         // 비밀번호 암호화 부분
-        //user.setPassword(new BCryptPasswordEncoder().encode(dto.getPassword()));
+        user.setPassword(new BCryptPasswordEncoder().encode(dto.getPassword()));
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
 
@@ -44,15 +49,24 @@ public class UserService {
     }
 
     // 로그인 기능
-    public boolean login(String userId, String password) {
+    public Map<String, String> login(String userId, String password) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        return true;
+        String accessToken = jwtUtil.generateAccessToken(user.getUserId());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUserId());
+
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+
+        return Map.of(
+                "accessToken", accessToken,
+                "refreshToken", refreshToken
+        );
     }
 
     // 내 정보 조회 기능
@@ -105,7 +119,4 @@ public class UserService {
                 .expenses(expenses)
                 .build();
     }
-
-
-
 }

@@ -31,6 +31,9 @@ public class User {
     @Column(length = 50, nullable = false)
     private String name;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
