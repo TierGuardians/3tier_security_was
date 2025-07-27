@@ -6,11 +6,10 @@ import com.tierguardians.finances.dto.AssetRequestDto;
 import com.tierguardians.finances.dto.AssetUpdateRequestDto;
 import com.tierguardians.finances.service.AssetService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/assets")
@@ -24,7 +23,8 @@ public class AssetController {
 
     // 자산 목록 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Asset>>> getAssets(@RequestParam String userId) {
+    public ResponseEntity<ApiResponse<List<Asset>>> getAssets(Authentication authentication) {
+        String userId = authentication.getName(); // JWT 토큰에서 추출된 userId
         List<Asset> assets = assetService.getAssetsByUserId(userId);
         return ResponseEntity.ok(ApiResponse.<List<Asset>>builder()
                 .success(true)
@@ -36,8 +36,9 @@ public class AssetController {
 
     // 자산 등록
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> addAsset(@RequestBody AssetRequestDto dto) {
-        assetService.addAsset(dto);
+    public ResponseEntity<ApiResponse<Void>> addAsset(@RequestBody AssetRequestDto dto, Authentication authentication) {
+        String userId = authentication.getName();
+        assetService.addAsset(dto, userId);
         return ResponseEntity.status(201).body(ApiResponse.<Void>builder()
                 .success(true)
                 .code(201)
@@ -48,8 +49,9 @@ public class AssetController {
 
     // 자산 수정
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateAsset(@PathVariable Long id, @RequestBody AssetUpdateRequestDto dto) {
-        assetService.updateAsset(id, dto);
+    public ResponseEntity<ApiResponse<Void>> updateAsset(@PathVariable Long id, @RequestBody AssetUpdateRequestDto dto, Authentication authentication) {
+        String userId = authentication.getName();
+        assetService.updateAsset(id, dto, userId);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .success(true)
                 .code(200)
@@ -60,8 +62,9 @@ public class AssetController {
 
     // 자산 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteAsset(@PathVariable Long id) {
-        assetService.deleteAsset(id);
+    public ResponseEntity<ApiResponse<Void>> deleteAsset(@PathVariable Long id, Authentication authentication) {
+        String userId = authentication.getName();
+        assetService.deleteAsset(id, userId);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .success(true)
                 .code(200)
@@ -69,5 +72,4 @@ public class AssetController {
                 .data(null)
                 .build());
     }
-
 }
