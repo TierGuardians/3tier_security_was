@@ -16,10 +16,8 @@ public class TokenService {
     private final UserRepository userRepository;
 
     public Map<String, String> reissueTokens(String refreshToken) {
-        // 1. 리프레시 토큰 검증
         String userId = jwtUtil.validateAndGetUserId(refreshToken);
 
-        // 2. DB에 저장된 토큰과 비교
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
@@ -27,11 +25,9 @@ public class TokenService {
             throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
         }
 
-        // 3. 토큰 재발급
         String newAccessToken = jwtUtil.generateAccessToken(userId);
-        String newRefreshToken = jwtUtil.generateRefreshToken(userId); // 갱신
+        String newRefreshToken = jwtUtil.generateRefreshToken(userId);
 
-        // 4. DB 저장
         user.setRefreshToken(newRefreshToken);
         userRepository.save(user);
 
