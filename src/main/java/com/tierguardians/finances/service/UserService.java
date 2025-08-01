@@ -1,5 +1,6 @@
 package com.tierguardians.finances.service;
 
+import com.tierguardians.finances.config.CsrfTokenStorage;
 import com.tierguardians.finances.domain.User;
 import com.tierguardians.finances.dto.*;
 import com.tierguardians.finances.repository.AssetRepository;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +25,8 @@ public class UserService {
     private final ExpenseRepository expenseRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final CsrfTokenStorage csrfTokenStorage;
+
 
     // 회원가입 기능
     public void signup(UserSignupRequestDto dto) {
@@ -40,7 +42,7 @@ public class UserService {
         // 사용자 엔티티 생성 및 저장
         User user = new User();
         user.setUserId(dto.getUserId());
-        // 비밀번호 암호화 부분
+        // 비밀번호 암호화
         user.setPassword(new BCryptPasswordEncoder().encode(dto.getPassword()));
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
@@ -49,11 +51,11 @@ public class UserService {
     }
 
     // 로그인 기능
-    public Map<String, String> login(String userId, String password) {
-        User user = userRepository.findById(userId)
+    public UserLoginResponseDto login(UserLoginRequestDto dto) {
+        User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
@@ -63,10 +65,10 @@ public class UserService {
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
 
-        return Map.of(
-                "accessToken", accessToken,
-                "refreshToken", refreshToken
-        );
+        String csrfToken = java.util.UUID.randomUUID().toString();
+        csrfTokenStorage.store(user.getUserId(), csrfToken);
+
+        return new UserLoginResponseDto(accessToken, refreshToken, csrfToken);
     }
 
     // 내 정보 조회 기능

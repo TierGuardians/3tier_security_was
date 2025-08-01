@@ -65,9 +65,10 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "http://192.168.56.1:3000",
-                "http://192.168.1.23",
+                //"http://192.168.1.23",
+                "http://3tier.prod",
                 "http://192.168.0.55:3000",
-                "http://frontend.local:3000",
+                "http://frontend.local",
                 "http://api.frontend.local"
                 //"http://frontend.prod"
         ));
