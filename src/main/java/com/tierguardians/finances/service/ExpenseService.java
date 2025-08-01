@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Service
@@ -21,15 +23,26 @@ public class ExpenseService {
 
     // 소비 내역 조회
     public List<Expense> getExpenses(String userId, String month, String category) {
-        if (month != null && category != null) {
-            return expenseRepository.findByUserIdAndMonthAndCategory(userId, month, category);
-        } else if (month != null) {
-            return expenseRepository.findByUserIdAndMonth(userId, month);
-        } else if (category != null) {
-            return expenseRepository.findByUserIdAndCategory(userId, category);
-        } else {
-            return expenseRepository.findByUserId(userId);
+        // 월 필터링이 있는 경우
+        if (month != null) {
+            YearMonth yearMonth = YearMonth.parse(month); // "2024-08" 형식 예상
+            LocalDate startDate = yearMonth.atDay(1);
+            LocalDate endDate = yearMonth.atEndOfMonth();
+
+            if (category != null) {
+                return expenseRepository.findByUserIdAndMonthAndCategory(userId, startDate, endDate, category);
+            } else {
+                return expenseRepository.findByUserIdAndMonth(userId, startDate, endDate);
+            }
         }
+
+        // 월 필터링 없이 카테고리만 있는 경우
+        if (category != null) {
+            return expenseRepository.findByUserIdAndCategory(userId, category);
+        }
+
+        // 전체 조회
+        return expenseRepository.findByUserId(userId);
     }
 
     // 소비 등록

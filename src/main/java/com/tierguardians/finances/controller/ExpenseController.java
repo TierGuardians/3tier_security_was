@@ -5,6 +5,7 @@ import com.tierguardians.finances.dto.ApiResponse;
 import com.tierguardians.finances.dto.ExpenseRequestDto;
 import com.tierguardians.finances.dto.ExpenseUpdateRequestDto;
 import com.tierguardians.finances.service.ExpenseService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -32,7 +33,7 @@ public class ExpenseController {
 
     // 소비 등록
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> addExpense(@RequestBody ExpenseRequestDto dto,
+    public ResponseEntity<ApiResponse<String>> addExpense(@Valid @RequestBody ExpenseRequestDto dto,
                                                           Authentication authentication) {
         String userId = authentication.getName();
         expenseService.addExpense(dto, userId);
