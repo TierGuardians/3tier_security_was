@@ -33,7 +33,7 @@ public class AssetService {
         }
 
         Asset asset = new Asset();
-        asset.setUserId(userId); // dto.getUserId() 제거
+        asset.setUserId(userId);
         asset.setName(dto.getName());
         asset.setType(dto.getType());
         asset.setAmount(dto.getAmount());
