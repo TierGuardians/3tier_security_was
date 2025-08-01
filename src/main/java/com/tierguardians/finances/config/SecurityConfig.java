@@ -37,9 +37,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, CsrfTokenStorage csrfTokenStorage) throws Exception {
         http
                 .cors(withDefaults())
-                .csrf(csrf -> csrf.disable()) // ❌ Spring CSRF 끔
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // ✅ 세션 완전 비활성화
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -51,12 +51,6 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new CsrfTokenFilter(csrfTokenStorage), JwtAuthenticationFilter.class);
-
-
-                //.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
-                //.addFilterAfter(new CsrfTokenFilter(csrfTokenStorage), JwtAuthenticationFilter.class);
-
-
         return http.build();
     }
 
@@ -65,7 +59,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "http://192.168.56.1:3000",
-                //"http://192.168.1.23",
+                "http://192.168.1.23",
                 "http://3tier.prod",
                 "http://192.168.0.55:3000",
                 "http://frontend.local",

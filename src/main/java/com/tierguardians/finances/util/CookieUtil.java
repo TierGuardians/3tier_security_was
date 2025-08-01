@@ -5,7 +5,7 @@ import org.springframework.http.ResponseCookie;
 
 public class CookieUtil {
 
-    private static final String DOMAIN = "frontend.local";
+    private static final String DOMAIN = "3tier.prod";
     private static final int MAX_AGE = 60 * 60; // 1시간
 
     public static void addCookie(HttpServletResponse response, String name, String value) {
