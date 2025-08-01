@@ -5,7 +5,6 @@ import com.tierguardians.finances.dto.ApiResponse;
 import com.tierguardians.finances.dto.BudgetRequestDto;
 import com.tierguardians.finances.dto.BudgetUpdateRequestDto;
 import com.tierguardians.finances.service.BudgetService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -32,11 +31,11 @@ public class BudgetController {
 
         if (month != null) {
             Budget budget = budgetService.getBudget(userId, month);
-            return ResponseEntity.ok(ApiResponse.success(budget));
-        } else {
-            List<Budget> budgets = budgetService.getAllBudgets(userId);
-            return ResponseEntity.ok(ApiResponse.success(budgets));
+            return ResponseEntity.ok(ApiResponse.success("예산 단일 조회 성공", budget));
         }
+
+        List<Budget> budgets = budgetService.getAllBudgets(userId);
+        return ResponseEntity.ok(ApiResponse.success("예산 전체 조회 성공", budgets));
     }
 
     // 예산 등록
@@ -45,8 +44,7 @@ public class BudgetController {
                                                          Authentication authentication) {
         String userId = authentication.getName();
         budgetService.addBudget(dto, userId);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("예산 등록 완료", 201));
+        return ResponseEntity.status(201).body(ApiResponse.success("예산 등록 완료", 201));
     }
 
     // 예산 수정
