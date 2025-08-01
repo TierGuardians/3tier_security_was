@@ -24,14 +24,10 @@ public class ExpenseController {
 
     // 소비 내역 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Expense>>> getExpenses(
-            @RequestParam(required = false) String month,
-            @RequestParam(required = false) String category,
-            Authentication authentication
-    ) {
+    public ResponseEntity<ApiResponse<List<Expense>>> getExpenses(@RequestParam(required = false) String month, @RequestParam(required = false) String category, Authentication authentication) {
         String userId = authentication.getName();
         List<Expense> expenses = expenseService.getExpenses(userId, month, category);
-        return ResponseEntity.ok(ApiResponse.success(expenses));
+        return ResponseEntity.ok(ApiResponse.success("소비 내역 조회 성공", expenses));
     }
 
     // 소비 등록
