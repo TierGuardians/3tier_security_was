@@ -8,6 +8,7 @@ import com.tierguardians.finances.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -24,6 +25,13 @@ public class AssetService {
     // 자산 목록 조회
     public List<Asset> getAssetsByUserId(String userId) {
         return assetRepository.findByUserId(userId);
+    }
+
+    // 총 자산
+    public BigDecimal calculateTotalAsset(String userId) {
+        return assetRepository.findByUserId(userId).stream()
+                .map(Asset::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     // 자산 등록

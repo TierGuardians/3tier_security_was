@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -28,6 +29,15 @@ public class AssetController {
         List<Asset> assets = assetService.getAssetsByUserId(userId);
         return ResponseEntity.ok(ApiResponse.success("자산 목록 조회 성공", assets));
     }
+
+    // 총 자산 조회
+    @GetMapping("/total")
+    public ResponseEntity<ApiResponse<BigDecimal>> getTotalAsset(Authentication authentication) {
+        String userId = authentication.getName();
+        BigDecimal total = assetService.calculateTotalAsset(userId);
+        return ResponseEntity.ok(ApiResponse.success("총 자산 조회 성공", total));
+    }
+
 
     // 자산 등록
     @PostMapping
