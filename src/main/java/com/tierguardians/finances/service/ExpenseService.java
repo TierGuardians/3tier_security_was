@@ -45,6 +45,19 @@ public class ExpenseService {
         return expenseRepository.findByUserId(userId);
     }
 
+    // 이번달 소비 총액
+    public BigDecimal calculateMonthlyExpense(String userId) {
+        LocalDate now = LocalDate.now();
+        LocalDate start = now.withDayOfMonth(1); // 이번 달 시작
+        LocalDate end = now.withDayOfMonth(now.lengthOfMonth()); // 이번 달 끝
+
+        List<Expense> expenses = expenseRepository.findByUserIdAndSpentAtBetween(userId, start, end);
+
+        return expenses.stream()
+                .map(Expense::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     // 소비 등록
     public void addExpense(ExpenseRequestDto dto, String userId) {
         Expense expense = new Expense();

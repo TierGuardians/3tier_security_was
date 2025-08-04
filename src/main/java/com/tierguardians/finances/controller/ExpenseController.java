@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -23,12 +24,21 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
+
     // 소비 내역 조회
     @GetMapping
     public ResponseEntity<ApiResponse<List<Expense>>> getExpenses(@RequestParam(required = false) String month, @RequestParam(required = false) String category, Authentication authentication) {
         String userId = authentication.getName();
         List<Expense> expenses = expenseService.getExpenses(userId, month, category);
         return ResponseEntity.ok(ApiResponse.success("소비 내역 조회 성공", expenses));
+    }
+
+    // 이번달 소비 총액
+    @GetMapping("/monthly-total")
+    public ResponseEntity<ApiResponse<BigDecimal>> getMonthlyTotalExpense(Authentication authentication) {
+        String userId = authentication.getName();
+        BigDecimal total = expenseService.calculateMonthlyExpense(userId);
+        return ResponseEntity.ok(ApiResponse.success("이번달 소비 총액", total));
     }
 
     // 소비 등록
