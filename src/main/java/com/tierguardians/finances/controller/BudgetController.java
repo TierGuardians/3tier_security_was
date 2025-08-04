@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -36,6 +37,14 @@ public class BudgetController {
 
         List<Budget> budgets = budgetService.getAllBudgets(userId);
         return ResponseEntity.ok(ApiResponse.success("예산 전체 조회 성공", budgets));
+    }
+
+    // 이번달 예산 조회
+    @GetMapping("/monthly-total")
+    public ResponseEntity<ApiResponse<BigDecimal>> getMonthlyBudget(Authentication authentication) {
+        String userId = authentication.getName();
+        BigDecimal budget = budgetService.getCurrentMonthBudget(userId);
+        return ResponseEntity.ok(ApiResponse.success("이번 달 예산 조회 성공", budget));
     }
 
     // 예산 등록

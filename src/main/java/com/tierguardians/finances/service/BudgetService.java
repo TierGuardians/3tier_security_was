@@ -8,7 +8,9 @@ import com.tierguardians.finances.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -30,6 +32,15 @@ public class BudgetService {
 
     public List<Budget> getAllBudgets(String userId) {
         return budgetRepository.findAllByUserId(userId);
+    }
+
+    // 이번달 예산 조회
+    public BigDecimal getCurrentMonthBudget(String userId) {
+        String currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+
+        return budgetRepository.findByUserIdAndMonth(userId, currentMonth)
+                .map(Budget::getAmount)
+                .orElse(BigDecimal.ZERO);
     }
 
     // 예산 등록
